@@ -40,21 +40,21 @@ export const HORARIOS_PADRAO = [
 ];
 
 export const CORES_SALA: Record<Sala, string> = {
-  'Laboratório Steam': 'bg-blue-500',
+  'Laboratório Steam': 'bg-red-500',
   'Sala Google': 'bg-emerald-500',
   'Sala Gourmet': 'bg-amber-500',
   'Auditório': 'bg-purple-500',
 };
 
 export const BORDER_SALA: Record<Sala, string> = {
-  'Laboratório Steam': 'border-blue-500',
+  'Laboratório Steam': 'border-red-500',
   'Sala Google': 'border-emerald-500',
   'Sala Gourmet': 'border-amber-500',
   'Auditório': 'border-purple-500',
 };
 
 export const TEXT_SALA: Record<Sala, string> = {
-  'Laboratório Steam': 'text-blue-600',
+  'Laboratório Steam': 'text-red-600',
   'Sala Google': 'text-emerald-600',
   'Sala Gourmet': 'text-amber-600',
   'Auditório': 'text-purple-600',
