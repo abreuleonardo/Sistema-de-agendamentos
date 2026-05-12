@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "Agendamento": {
+      "title": "Agendamento",
+      "description": "Reserva de sala por um profissional",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nomeProfissional": { "type": "string" },
+        "atividade": { "type": "string" },
+        "serieTurma": { "type": "string" },
+        "dataAgendamento": { "type": "string", "format": "date" },
+        "horario": { "type": "string" },
+        "sala": { "type": "string" },
+        "responsavelAgendamento": { "type": "string" },
+        "observacoes": { "type": "string" },
+        "status": { "type": "string", "enum": ["ativo", "cancelado"] },
+        "motivoCancelamento": { "type": "string" },
+        "criadoEm": { "type": "object" }
+      },
+      "required": ["nomeProfissional", "atividade", "dataAgendamento", "horario", "sala", "responsavelAgendamento", "status", "criadoEm"]
+    },
+    "Aviso": {
+      "title": "Aviso",
+      "description": "Comunicado interno para as supervisões",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "mensagem": { "type": "string" },
+        "autor": { "type": "string" },
+        "criadoEm": { "type": "object" }
+      },
+      "required": ["mensagem", "autor", "criadoEm"]
+    },
+    "Historico": {
+      "title": "Histórico",
+      "description": "Registro de alterações no sistema",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "acao": { "type": "string" },
+        "detalhes": { "type": "string" },
+        "usuario": { "type": "string" },
+        "criadoEm": { "type": "object" }
+      },
+      "required": ["acao", "detalhes", "usuario", "criadoEm"]
+    }
+  },
+  "firestore": {
+    "agendamentos": {
+      "schema": "Agendamento",
+      "description": "Coleção de agendamentos de salas"
+    },
+    "avisos": {
+      "schema": "Aviso",
+      "description": "Coleção de comunicados internos"
+    },
+    "historico": {
+      "schema": "Historico",
+      "description": "Coleção de registros de alterações"
+    }
+  }
+}

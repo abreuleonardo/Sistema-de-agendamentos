@@ -1,0 +1,6 @@
+{
+  "name": "Sistema de Agendamento de Salas",
+  "description": "Sistema compartilhado para agendamento de salas escolares com sincronização em tempo real, quadro de avisos e histórico de alterações.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

@@ -1,0 +1,36 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Since the user explicitly requested NO LOGIN and public access:
+    // "O sistema será compartilhado apenas por link entre supervisões escolares, sem necessidade de login."
+    // "Permitir leitura e escrita públicas"
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128;
+    }
+
+    match /agendamentos/{id} {
+      allow read: if true;
+      allow create: if isValidId(id);
+      allow update, delete: if true;
+    }
+
+    match /avisos/{id} {
+      allow read: if true;
+      allow create: if isValidId(id);
+      allow update, delete: if true;
+    }
+
+    match /historico/{id} {
+      allow read: if true;
+      allow create: if isValidId(id);
+      allow update, delete: if true;
+    }
+  }
+}
