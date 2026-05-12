@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { MessageSquare, Send, Trash2, User, Clock } from 'lucide-react';
+import { MessageSquare, Trash2 } from 'lucide-react';
 import { Aviso } from '../types';
 import { firestoreService } from '../services/firestoreService';
 import { toast } from 'react-hot-toast';
-import { formatDateTime } from '../lib/utils';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface AnnouncementsProps {
   avisos: Aviso[];
@@ -14,38 +15,72 @@ export default function Announcements({ avisos }: AnnouncementsProps) {
   const [autor, setAutor] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const formatarData = (data: any) => {
+    try {
+      if (!data) return 'Agora';
+
+      if (data?.seconds) {
+        return format(
+          new Date(data.seconds * 1000),
+          'dd/MM/yyyy HH:mm',
+          { locale: ptBR }
+        );
+      }
+
+      return 'Agora';
+    } catch {
+      return 'Agora';
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!mensagem || !autor) return toast.error('Preencha mensagem e seu nome');
-    
-    setLoading(true);
+
+    if (!mensagem.trim() || !autor.trim()) {
+      toast.error('Preencha mensagem e seu nome');
+      return;
+    }
+
     try {
-      await firestoreService.createAviso(mensagem, autor);
+      setLoading(true);
+
+      await firestoreService.createAviso(
+        mensagem.trim(),
+        autor.trim()
+      );
+
       setMensagem('');
-      toast.success('Comunicado enviado!');
-    } catch (e) {
-      toast.error('Erro ao enviar aviso');
+      setAutor('');
+
+      toast.success('Aviso publicado!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Erro ao publicar aviso');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    const nome = prompt('Informe seu nome para confirmar a exclusão:');
+    const nome = prompt('Digite seu nome para confirmar');
+
     if (!nome) return;
-    
+
     try {
       await firestoreService.deleteAviso(id, nome);
-      toast.success('Aviso excluído');
-    } catch (e) {
-      toast.error('Erro ao excluir aviso');
+      toast.success('Aviso removido');
+    } catch (error) {
+      console.error(error);
+      toast.error('Erro ao remover aviso');
     }
   };
 
   return (
-    <div className="flex flex-col gap-8 animate-in slide-in-from-right duration-500">
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden">
-        <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+    <div className="flex flex-col gap-8">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        
+        {/* HEADER */}
+        <div className="p-4 border-b border-slate-100 bg-slate-50">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
             <MessageSquare size={16} />
             Quadro de Avisos
@@ -53,71 +88,105 @@ export default function Announcements({ avisos }: AnnouncementsProps) {
         </div>
 
         <div className="p-6">
-          <form onSubmit={handleSubmit} className="bg-slate-50 p-5 rounded-xl border border-slate-100 mb-8 space-y-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="w-full md:w-1/3">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 shadow-none block">Autor</label>
-                <input 
+
+          {/* FORM */}
+          <form
+            onSubmit={handleSubmit}
+            className="bg-slate-50 p-5 rounded-xl border border-slate-100 mb-8 space-y-4"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">
+                  Seu nome
+                </label>
+
+                <input
                   type="text"
-                  className="w-full bg-white border-slate-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-blue-500 transition-colors"
-                  placeholder="Seu nome"
                   value={autor}
                   onChange={(e) => setAutor(e.target.value)}
+                  placeholder="Digite seu nome"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"
                 />
               </div>
-              <div className="flex-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Comunicado</label>
+
+              <div className="md:col-span-3">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">
+                  Comunicado
+                </label>
+
                 <div className="flex gap-2">
-                  <input 
+                  <input
                     type="text"
-                    className="flex-1 bg-white border-slate-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-blue-500 transition-colors"
-                    placeholder="Escreva algo para todos..."
                     value={mensagem}
                     onChange={(e) => setMensagem(e.target.value)}
+                    placeholder="Digite o aviso..."
+                    className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"
                   />
-                  <button 
-                    disabled={loading}
+
+                  <button
                     type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all font-bold text-xs disabled:opacity-50 active:scale-95 shadow-sm"
+                    disabled={loading}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 rounded-lg font-bold text-sm transition-all disabled:opacity-50"
                   >
-                    Postar
+                    {loading ? 'Postando...' : 'Postar'}
                   </button>
                 </div>
               </div>
+
             </div>
           </form>
 
+          {/* LISTA */}
           <div className="space-y-4">
             {avisos.length === 0 ? (
-              <div className="text-center py-20 px-4">
-                <div className="bg-slate-50 p-6 rounded-full w-fit mx-auto mb-4 border border-slate-100">
-                  <MessageSquare className="text-slate-200" size={40} />
-                </div>
-                <h3 className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Nenhum comunicado no momento</h3>
+              <div className="text-center py-12">
+                <MessageSquare
+                  className="mx-auto text-slate-300 mb-3"
+                  size={40}
+                />
+
+                <p className="text-slate-400 text-sm">
+                  Nenhum aviso publicado.
+                </p>
               </div>
             ) : (
-              avisos.map((aviso, idx) => (
-                <div key={aviso.id} className={cn(
-                  "group relative bg-slate-50 border-slate-100 border-l-4 p-4 rounded-lg transition-all hover:bg-white hover:border-slate-300",
-                  idx % 2 === 0 ? "border-l-blue-400" : "border-l-amber-400"
-                )}>
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-800 text-xs">{aviso.autor}</span>
-                      <span className="text-[10px] text-slate-400 font-medium">• {formatDateTime(aviso.criadoEm)}</span>
+              avisos.map((aviso) => (
+                <div
+                  key={aviso.id}
+                  className="bg-slate-50 border border-slate-100 rounded-xl p-4 group"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <span className="font-bold text-slate-700 text-sm">
+                          {aviso.autor}
+                        </span>
+
+                        <span className="text-xs text-slate-400">
+                          • {formatarData(aviso.criadoEm)}
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-slate-600 whitespace-pre-wrap break-words">
+                        {aviso.mensagem}
+                      </p>
                     </div>
-                    <button 
+
+                    <button
                       onClick={() => handleDelete(aviso.id)}
-                      className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
+                      className="opacity-0 group-hover:opacity-100 transition-all text-slate-300 hover:text-red-500"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={16} />
                     </button>
+
                   </div>
-                  <p className="text-slate-600 text-sm leading-relaxed">{aviso.mensagem}</p>
                 </div>
               ))
             )}
           </div>
+
         </div>
       </div>
     </div>
