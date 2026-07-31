@@ -1,4 +1,4 @@
-export type Sala = 'Laboratório Steam' | 'Sala Google' | 'Sala Gourmet' | 'Auditório';
+export type Sala = 'Laboratório Steam' | 'Sala Google' | 'Sala Gourmet' | 'Auditório' | 'Sala de Atendimento';
 
 export type StatusAgendamento = 'ativo' | 'cancelado';
 
@@ -32,7 +32,7 @@ export interface HistoricoItem {
   criadoEm: any; // Firestore Timestamp
 }
 
-export const SALAS: Sala[] = ['Laboratório Steam', 'Sala Google', 'Sala Gourmet', 'Auditório'];
+export const SALAS: Sala[] = ['Laboratório Steam', 'Sala Google', 'Sala Gourmet', 'Auditório', 'Sala de Atendimento'];
 
 export const HORARIOS_PADRAO = [
   '07:10', '08:10', '08:50', '09:20', '09:40', '10:30', '11:00', '11:30',
@@ -44,6 +44,7 @@ export const CORES_SALA: Record<Sala, string> = {
   'Sala Google': 'bg-emerald-500',
   'Sala Gourmet': 'bg-amber-500',
   'Auditório': 'bg-purple-500',
+  'Sala de Atendimento': 'bg-rose-500',
 };
 
 export const BORDER_SALA: Record<Sala, string> = {
@@ -51,6 +52,7 @@ export const BORDER_SALA: Record<Sala, string> = {
   'Sala Google': 'border-emerald-500',
   'Sala Gourmet': 'border-amber-500',
   'Auditório': 'border-purple-500',
+  'Sala de Atendimento': 'border-rose-500',
 };
 
 export const TEXT_SALA: Record<Sala, string> = {
@@ -58,4 +60,5 @@ export const TEXT_SALA: Record<Sala, string> = {
   'Sala Google': 'text-emerald-600',
   'Sala Gourmet': 'text-amber-600',
   'Auditório': 'text-purple-600',
+  'Sala de Atendimento': 'text-rose-600',
 };
